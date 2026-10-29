@@ -1,0 +1,107 @@
+
+> @getpaseo/app@0.14.0-beta.1 test:e2e
+> playwright test --project=browser e2e/browser/assistant-file-link-tooltip.spec.ts --grep scroll selected --max-failures=1 --output=/private/tmp/paseo-chat-scroll-red
+
+[metro] Skipping web setup: EXPO_NO_WEB_SETUP is enabled.
+[metro] Using src/app as the root directory for Expo Router.
+[metro] Waiting on http://localhost:61439
+[metro] Logs for your project will appear below.
+[metro] Web Bundled 1880ms packages/app/index.ts (5734 modules)
+[e2e] Metro warmed on port 61439
+
+Running 1 test using 1 worker
+
+(node:46602) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46602) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] Worker 0 daemon started on port 61462, home: /var/folders/v9/qd_4h6vs4656gl4k42sl73m40000gn/T/paseo-e2e-worker-0-rjtbif
+[metro] Web Bundled 251ms packages/app/index.ts (1 module)
+[metro] Web Bundled 38ms packages/app/src/attachments/web/indexeddb-attachment-store.ts (1 module)
+[metro] Web  INFO  %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[metro] Web  LOG  Running application "main" with appParams:
+[metro]  {"hydrate": undefined, "rootTag": "#root"} 
+[metro] Development-level warnings: ON.
+[metro] Performance optimizations: OFF.
+[metro] Web  WARN  Require cycle: src/stores/workspace-layout-store.ts -> src/plugins/workspace-panels/locations.ts -> src/plugins/registry.ts -> src/plugins/client-runtime.ts -> src/runtime/host-runtime.ts -> src/desktop/browser/automation/handler.ts -> src/stores/workspace-layout-store.ts
+[metro] Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[metro] Web  WARN  Require cycle: src/runtime/host-runtime.ts -> src/runtime/directory-sync/index.ts -> src/runtime/directory-sync/agent-replica.ts -> src/hooks/use-archive-agent.ts -> src/runtime/host-runtime.ts
+[metro] Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[metro] Web  WARN  Require cycle: src/plugins/workspace-panels/locations.ts -> src/plugins/registry.ts -> src/plugins/client-runtime.ts -> src/plugins/actions.ts -> src/plugins/workspace-panels/locations.ts
+[metro] Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[metro] Web  WARN  Require cycle: src/stores/navigation-active-workspace-store/index.ts -> src/workspace-tabs/navigation.ts -> src/stores/workspace-layout-store.ts -> src/plugins/workspace-panels/locations.ts -> src/plugins/registry.ts -> src/plugins/client-runtime.ts -> src/plugins/navigation.ts -> src/stores/navigation-active-workspace-store/index.ts
+[metro] Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[metro] Web  WARN  Require cycle: src/stores/workspace-layout-store.ts -> src/plugins/workspace-panels/locations.ts -> src/plugins/registry.ts -> src/plugins/client-runtime.ts -> src/plugins/navigation.ts -> src/stores/workspace-layout-store.ts
+[metro] Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[metro] Web  WARN  Require cycle: src/plugins/registry.ts -> src/plugins/evaluate.ts -> src/plugins/themes/index.ts -> src/plugins/registry.ts
+[metro] Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[metro] Web  WARN  Require cycle: src/components/sidebar-workspace-list.tsx -> src/components/sidebar/sidebar-status-list.tsx -> src/components/sidebar/sidebar-workspace-row-content.tsx -> src/components/workspace-hover-card.tsx -> src/components/sidebar-workspace-list.tsx
+[metro] Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[metro] Web  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+[metro] Web  WARN  Animated: `useNativeDriver` is not supported because the native animated module is missing. Falling back to JS-based animation. To resolve this, add `RCTAnimation` module to this app, or remove `useNativeDriver`. Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md
+[e2e] Worker 0 daemon stopped
+  ✘  1 [browser] › e2e/browser/assistant-file-link-tooltip.spec.ts:123:5 › assistant file links scroll selected files into view (17.3s)
+[31mTesting stopped early after 1 maximum allowed failures.[39m
+[e2e] Metro stopped
+
+
+  1) [browser] › e2e/browser/assistant-file-link-tooltip.spec.ts:123:5 › assistant file links scroll selected files into view 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: getByTestId('file-explorer-tree-scroll').locator('[aria-selected="true"]')
+    Expected substring: [32m"target.md"[39m
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 10000ms[22m
+    [2m  - waiting for getByTestId('file-explorer-tree-scroll').locator('[aria-selected="true"]')[22m
+
+
+      147 |     await expect(page.getByTestId("markdown-preview-frame")).toContainText("Scroll target");
+      148 |     const selectedRow = page.getByTestId("file-explorer-tree-scroll").locator('[aria-selected="true"]');
+    > 149 |     await expect(selectedRow).toContainText("target.md");
+          |                               ^
+      150 |     await expect(selectedRow).toBeInViewport();
+      151 |     await page.screenshot({ path: testInfo.outputPath("after-scroll-to-linked-file.png") });
+      152 |   } finally {
+        at /Users/anngyn/.paseo/contributions/paseo/packages/app/e2e/browser/assistant-file-link-tooltip.spec.ts:149:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../../../../private/tmp/paseo-chat-scroll-red/assistant-file-link-toolti-3ae58-ll-selected-files-into-view-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: browser-console (text/plain) ────────────────────────────────────────────────────
+    [console:info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+    [console:log] Running application "main" with appParams:
+     {rootTag: #root, hydrate: undefined} 
+    Development-level warnings: ON.
+    Performance optimizations: OFF.
+    [co...
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../../../../../private/tmp/paseo-chat-scroll-red/assistant-file-link-toolti-3ae58-ll-selected-files-into-view-browser/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../../../../private/tmp/paseo-chat-scroll-red/assistant-file-link-toolti-3ae58-ll-selected-files-into-view-browser/error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../../../private/tmp/paseo-chat-scroll-red/assistant-file-link-toolti-3ae58-ll-selected-files-into-view-browser/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../../../../private/tmp/paseo-chat-scroll-red/assistant-file-link-toolti-3ae58-ll-selected-files-into-view-browser/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [browser] › e2e/browser/assistant-file-link-tooltip.spec.ts:123:5 › assistant file links scroll selected files into view 
+  1 error was not a part of any test, see above for details
+npm error Lifecycle script `test:e2e` failed with error:
+npm error code 1
+npm error path /Users/anngyn/.paseo/contributions/paseo/packages/app
+npm error workspace @getpaseo/app@0.14.0-beta.1
+npm error location /Users/anngyn/.paseo/contributions/paseo/packages/app
+npm error command failed
+npm error command sh -c playwright test --project=browser e2e/browser/assistant-file-link-tooltip.spec.ts --grep 'scroll selected' --max-failures=1 --output=/private/tmp/paseo-chat-scroll-red
