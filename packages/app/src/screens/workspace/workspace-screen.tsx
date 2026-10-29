@@ -1664,6 +1664,21 @@ function WorkspaceScreenContent({
     workspaceSetupStatus,
   ]);
 
+  const { revealDirectory, revealFile } = useFileExplorerActions({
+    serverId: normalizedServerId,
+    workspaceId: normalizedWorkspaceId,
+    workspaceRoot: workspaceDirectory,
+  });
+  const revealAssistantFile = useStableEvent((location: WorkspaceFileLocation) => {
+    if (revealFile(location.path) && !isMobile) {
+      openExplorerSidebarView({
+        isCompact: false,
+        workspaceKey: persistenceKey,
+        view: "files",
+      });
+    }
+  });
+
   const handleOpenFileFromChat = useCallback(
     (location: WorkspaceFileLocation, parentTabId?: string | null) => {
       const normalizedLocation = normalizeWorkspaceFileLocation(location);
@@ -1673,6 +1688,7 @@ function WorkspaceScreenContent({
       if (!persistenceKey) {
         return;
       }
+      revealAssistantFile(normalizedLocation);
       const target = createWorkspaceFileTabTarget(normalizedLocation);
       const tabId = parentTabId
         ? revealWorkspaceChildTab(persistenceKey, target, parentTabId, FOCUSED_PANE_PLACEMENT)
@@ -1681,7 +1697,13 @@ function WorkspaceScreenContent({
         navigateToTabId(tabId);
       }
     },
-    [navigateToTabId, openWorkspaceTabFocused, revealWorkspaceChildTab, persistenceKey],
+    [
+      navigateToTabId,
+      openWorkspaceTabFocused,
+      revealWorkspaceChildTab,
+      persistenceKey,
+      revealAssistantFile,
+    ],
   );
 
   const handleOpenPreferredAssistantFile = useCallback(
@@ -1694,6 +1716,7 @@ function WorkspaceScreenContent({
         return;
       }
 
+      revealAssistantFile(location);
       openPreferredWorkspaceTarget({
         workspaceKey: persistenceKey,
         target: createWorkspaceFileTabTarget(location),
@@ -1702,7 +1725,7 @@ function WorkspaceScreenContent({
         parentTabId: input.parentTabId,
       });
     },
-    [openInSidePane, persistenceKey],
+    [openInSidePane, persistenceKey, revealAssistantFile],
   );
 
   const handleOpenWorkspaceFileFromPane = useStableEvent(function handleOpenWorkspaceFileFromPane({
@@ -1722,6 +1745,7 @@ function WorkspaceScreenContent({
     if (request.disposition === "side") {
       const location = normalizeWorkspaceFileLocation(request.location);
       if (!location || !persistenceKey) return;
+      revealAssistantFile(location);
       openWorkspaceTargetBeside({
         workspaceKey: persistenceKey,
         target: createWorkspaceFileTabTarget(location),
@@ -3689,11 +3713,6 @@ function WorkspaceScreenContent({
     desktopFocusModeEnabled,
   ]);
 
-  const { revealDirectory } = useFileExplorerActions({
-    serverId: normalizedServerId,
-    workspaceId: normalizedWorkspaceId,
-    workspaceRoot: workspaceDirectory,
-  });
   const openMarkdownFile = useStableEvent((location: WorkspaceFileLocation) => {
     handleOpenPreferredAssistantFile({ location, parentTabId: activeTabId });
   });

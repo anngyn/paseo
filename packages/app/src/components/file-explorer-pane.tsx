@@ -952,6 +952,51 @@ export function FileExplorerPane({
     return rows;
   }, [pendingEdit, treeRows]);
 
+  const revealEntryRequest = explorerState?.revealEntryRequest;
+  const completedRevealRequestRef = useRef<typeof revealEntryRequest>(undefined);
+  const revealEntryIndex = listRows.findIndex(
+    (row) =>
+      row.type === "entry" &&
+      row.row.entry.path === revealEntryRequest?.path &&
+      row.row.entry.path === selectedEntryPath,
+  );
+  const scrollToRevealedEntry = useCallback(() => {
+    if (
+      revealEntryIndex < 0 ||
+      pendingEdit ||
+      !revealEntryRequest ||
+      completedRevealRequestRef.current === revealEntryRequest ||
+      !treeListRef.current
+    )
+      return;
+    completedRevealRequestRef.current = revealEntryRequest;
+    treeListRef.current.scrollToIndex({
+      index: revealEntryIndex,
+      animated: false,
+      viewPosition: 0.5,
+    });
+  }, [pendingEdit, revealEntryIndex, revealEntryRequest]);
+  useEffect(scrollToRevealedEntry, [scrollToRevealedEntry]);
+  const handleScrollToIndexFailed = useCallback(
+    ({ index, averageItemLength }: { index: number; averageItemLength: number }) => {
+      // Retry after the virtualized list measures the newly revealed rows.
+      completedRevealRequestRef.current = undefined;
+      treeListRef.current?.scrollToOffset({
+        offset: index * averageItemLength,
+        animated: false,
+      });
+    },
+    [],
+  );
+  const { onContentSizeChange: updateScrollbarContentSize } = scrollbar;
+  const handleTreeContentSizeChange = useCallback(
+    (width: number, height: number) => {
+      updateScrollbarContentSize(width, height);
+      scrollToRevealedEntry();
+    },
+    [updateScrollbarContentSize, scrollToRevealedEntry],
+  );
+
   const showInitialLoading = resolveShowInitialLoading({
     directories,
     isExplorerLoading,
@@ -1085,6 +1130,8 @@ export function FileExplorerPane({
         currentSortLabel={currentSortLabel}
         isRefreshFetching={isRefreshFetching}
         treeListRef={treeListRef}
+        onTreeContentSizeChange={handleTreeContentSizeChange}
+        onScrollToIndexFailed={handleScrollToIndexFailed}
         scrollbar={scrollbar}
         renderTreeRow={renderTreeRow}
         handleSortCycle={handleSortCycle}
@@ -1160,6 +1207,8 @@ interface FileExplorerPaneContentProps {
   currentSortLabel: string;
   isRefreshFetching: boolean;
   treeListRef: RefObject<FlatList<ExplorerListRow> | null>;
+  onTreeContentSizeChange: (width: number, height: number) => void;
+  onScrollToIndexFailed: (info: { index: number; averageItemLength: number }) => void;
   scrollbar: OverlayFlatListScrollbar;
   renderTreeRow: (info: ListRenderItemInfo<ExplorerListRow>) => ReactElement;
   handleSortCycle: () => void;
@@ -1184,6 +1233,8 @@ function FileExplorerPaneContent(props: FileExplorerPaneContentProps) {
     currentSortLabel,
     isRefreshFetching,
     treeListRef,
+    onTreeContentSizeChange,
+    onScrollToIndexFailed,
     scrollbar,
     renderTreeRow,
     handleSortCycle,
@@ -1356,12 +1407,13 @@ function FileExplorerPaneContent(props: FileExplorerPaneContentProps) {
               contentContainerStyle={styles.entriesContent}
               onLayout={scrollbar.onLayout}
               onScroll={scrollbar.onScroll}
-              onContentSizeChange={scrollbar.onContentSizeChange}
+              onContentSizeChange={onTreeContentSizeChange}
               scrollEventThrottle={16}
               showsVerticalScrollIndicator={!scrollbar.enabled}
               initialNumToRender={24}
               maxToRenderPerBatch={40}
               windowSize={12}
+              onScrollToIndexFailed={onScrollToIndexFailed}
             />
           )}
           {listRows.length > 0 ? scrollbar.overlay : null}
